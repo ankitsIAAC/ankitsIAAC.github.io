@@ -56,8 +56,8 @@
     });
 
     function submitForm() {
-      const description = document.getElementById("description").value;
-      const amount = document.getElementById("amount").value;
+      const description = document.getElementById("description").value.trim();
+      const amount = document.getElementById("amount").value.trim();
       const who = document.getElementById("who").value;
       const tag = document.getElementById("tag").value;
 
@@ -72,19 +72,23 @@
       formData.append("who", who);
       formData.append("tag", tag);
 
-      fetch("https://script.google.com/macros/s/AKfycbxKFU_MnJZE8NDTaFpOlxd0E4n-SozXlyaeHlIIuc-TnTM1XLeSzgxfNkaEbL0RwQ9uPg/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbym6R6ClTfY9JMFaj0yHE72nLxeKYvMwZ6RkEQj0fRI1uzpVez_mSK-O6__5YT3tnNoeA/exec", {
         method: "POST",
         body: formData
       })
       .then(response => response.text())
       .then(data => {
-        alert("Expense submitted!");
-        document.getElementById("description").value = "";
-        document.getElementById("amount").value = "";
-        document.getElementById("tag").value = "Need";
+        if (data.trim() === "Success") {
+          alert("Expense submitted!");
+          document.getElementById("description").value = "";
+          document.getElementById("amount").value = "";
+          document.getElementById("tag").value = "Need";
+        } else {
+          alert("Submission failed: " + data);
+        }
       })
       .catch(error => {
-        alert("Error submitting: " + error);
+        alert("Error submitting: " + error.message);
       });
     }
   </script>
