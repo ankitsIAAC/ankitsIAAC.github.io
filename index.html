@@ -1,63 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Expense Logger</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --input-bg: #f0f0f0;
+      --button-bg: #4B0082;
+      --card-bg: #ffffff;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --input-bg: #1e1e1e;
+      --button-bg: #00d4ff;
+      --card-bg: #1b1b1b;
+    }
+
     body {
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
       max-width: 400px;
       margin: auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
     }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     input, select, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 10px;
       font-size: 16px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    button {
+      background: var(--button-bg);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    .toggle-switch {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>Log Expense</h2>
+  <div class="toggle-switch">
+    <label class="switch">
+      <input type="checkbox" id="themeToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
 
-  <label>Description</label>
-  <input type="text" id="description" required>
+  <div class="container">
+    <div class="logo">💰 SpendSmart</div>
+    <h2>Log Expense</h2>
 
-  <label>Amount</label>
-  <input type="number" id="amount" required>
+    <label>Description</label>
+    <input type="text" id="description" required>
 
-  <label>Who</label>
-  <select id="who">
-    <option value="">Select</option>
-    <option value="Me">Me</option>
-    <option value="Wife">Wife</option>
-  </select>
+    <label>Amount</label>
+    <input type="number" id="amount" required>
 
-  <label>Tag</label>
-  <select id="tag">
-    <option value="Need">Need</option>
-    <option value="Want">Want</option>
-    <option value="Investment">Investment</option>
-  </select>
+    <label>Who</label>
+    <select id="who">
+      <option value="">Select</option>
+      <option value="Me">Me</option>
+      <option value="Wife">Wife</option>
+    </select>
 
-  <button onclick="submitForm()">Submit</button>
+    <label>Tag</label>
+    <select id="tag">
+      <option value="Need">Need</option>
+      <option value="Want">Want</option>
+      <option value="Investment">Investment</option>
+    </select>
+
+    <button onclick="submitForm()">Submit</button>
+  </div>
 
   <script>
+    // Dark mode toggle logic
+    const toggle = document.getElementById("themeToggle");
+    const currentTheme = localStorage.getItem("theme");
+
+    if (currentTheme === "dark") {
+      document.body.classList.add("dark");
+      toggle.checked = true;
+    }
+
+    toggle.addEventListener("change", function () {
+      if (this.checked) {
+        document.body.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.body.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+    });
+
     // Pre-fill 'Who' from localStorage
     const savedWho = localStorage.getItem("who");
     if (savedWho) {
       document.getElementById("who").value = savedWho;
     }
 
-    // Save 'Who' for later
+    // Save 'Who' on change
     document.getElementById("who").addEventListener("change", function () {
       localStorage.setItem("who", this.value);
     });
 
+    // Submit handler
     function submitForm() {
-      const description = document.getElementById("description").value.trim();
-      const amount = document.getElementById("amount").value.trim();
+      const description = document.getElementById("description").value;
+      const amount = document.getElementById("amount").value;
       const who = document.getElementById("who").value;
       const tag = document.getElementById("tag").value;
 
@@ -78,17 +217,13 @@
       })
       .then(response => response.text())
       .then(data => {
-        if (data.trim() === "Success") {
-          alert("Expense submitted!");
-          document.getElementById("description").value = "";
-          document.getElementById("amount").value = "";
-          document.getElementById("tag").value = "Need";
-        } else {
-          alert("Submission failed: " + data);
-        }
+        alert("Expense submitted!");
+        document.getElementById("description").value = "";
+        document.getElementById("amount").value = "";
+        document.getElementById("tag").value = "Need";
       })
       .catch(error => {
-        alert("Error submitting: " + error.message);
+        alert("Error submitting: " + error);
       });
     }
   </script>
